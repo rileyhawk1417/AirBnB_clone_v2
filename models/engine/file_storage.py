@@ -59,5 +59,6 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
+        """ Deletes the file open which called on"""
         if obj is not None and obj in self.__objects:
             self.__objects.pop(obj)
