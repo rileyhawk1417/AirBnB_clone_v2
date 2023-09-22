@@ -60,5 +60,10 @@ class FileStorage:
 
     def delete(self, obj=None):
         """ Deletes the file open which called on"""
-        if obj is not None and obj in self.__objects:
-            self.__objects.pop(obj)
+        if obj is None:
+            return
+
+        obj_key = obj.__class__.__name__ + "." + str(obj.id)
+        if obj_key in self.__objects:
+            del self.__objects[obj_key]
+            self.save()
