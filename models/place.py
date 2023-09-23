@@ -34,23 +34,24 @@ class Place(BaseModel, Base):
     longitude = Column(Float, nullable=True)
     amenity_ids = []
     review = relationship("Review", backref="place", cascade="delete")
+    amenities = relationship(
+        'Amenity',
+        secondary=place_amenity,
+        viewonly=False,
+        back_populates='place_amenities'
+    )
 
-    if getenv('HBNB_TYPE_STORAGE') == 'db':
-        amenities = relationship(
-            'Amenity',
-            secondary=place_amenity,
-            viewonly=False
-        )
 
-    if getenv("HBNB_TYPE_STORAGE") != "db":
-        @property
-        def reviews(self):
-            review_list = []
-            for review in list(models.storage.all(Review).values()):
-                if review.place_id == self.id:
-                    review_list.append(review)
-            return review_list
+if getenv("HBNB_TYPE_STORAGE") != "db":
+    @property
+    def reviews(self):
+        review_list = []
+        for review in list(models.storage.all(Review).values()):
+            if review.place_id == self.id:
+                review_list.append(review)
+        return review_list
 
+if getenv('HBNB_TYPE_STORAGE') != 'db':
     @property
     def amenities(self):
         """Get/set linked Amenities."""
@@ -65,5 +66,3 @@ class Place(BaseModel, Base):
         """amenities def setter"""
         if type(value) == Amenity:
             self.amenity_ids.append(value.id)
-
-

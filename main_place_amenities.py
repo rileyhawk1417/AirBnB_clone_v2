@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """ Test link Many-To-Many Place <> Amenity
 """
-from models import *
+from models import storage
 from models.amenity import Amenity
 from models.city import City
 from models.place import Place
@@ -46,3 +46,4 @@ place_2.amenities.append(amenity_3)
 storage.save()
 
 print("OK")
+
