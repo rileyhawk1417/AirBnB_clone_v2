@@ -2,38 +2,58 @@
 """Fabfile module to help pack web files"""
 import os
 from datetime import datetime as time
-from fabric.api import env, put, run, runs_once
+from fabric.api import env,\
+    put, run, task, sudo
+
 
 env.hosts = ['100.26.221.74', '52.87.254.201']
 env.user = 'ubuntu'
 
-@runs_once
-def do_deploy():
+
+@task
+def do_deploy(archive_path):
     """Deploy code to web servers"""
- 
+
+    if os.path.exists(archive_path) is not True:
+        return False
     # year, month, day, hour, minutes, seconds
-    date_now = time.now().strftime("%Y%m%d%H%M%S")
+    """
+    archive_date = time.strptime(\
+    archive_path[20:].split('.')[0], "%Y%m%d%H%M%S")
+    """
+    archive_date = archive_path[20:].split('.')[0]
 
     # Place archive in tmp
-    put("versions/web_static_{}.tgz".format(date_now), '/tmp/')
+    put("versions/web_static_{}.tgz".format(archive_date), '/tmp/')
 
     # mkdir in releases
-    run("mkdir -p /data/web_static/releases/web_static_{}".format(date_now))
+    folder_name = "web_static_{}".format(archive_date)
+    run("mkdir -p /data/web_static/releases/{}".format(folder_name))
 
-    # Uncompress files to new dir 
-    run ("tar -xzf /tmp/web_static_{}.tgz -C\
-    /data/web_static/releases/web_static_{}".format(date_now, date_now))
+    # Uncompress files to new dir
+    tar_name = "/tmp/web_static_{}.tgz".format(archive_date)
+    tar_dir = "/data/web_static/releases/web_static_{}".format(archive_date)
+    run("tar -xzf {} -C {}".format(tar_name, tar_dir))
 
     # Move files from subfolder to parent
-    run("mv /data/web_static/releases/web_static_{}/web_static/*\
-    /data/web_static/releases/web_static_{}".format(date_now, date_now))
+    run("mv /data/web_static/releases" +
+        "/web_static_{}/web_static/*".format(archive_date) +
+        " /data/web_static/releases" +
+        "/web_static_{}".format(archive_date))
 
     # Delete empty folder
-    run("rm -rf /data/web_static/releases/web_static_{}/web_static_")
+    run("rm -rf /data/web_static/releases" +
+        "/web_static_{}/web_static".format(archive_date))
 
     # Delete current symlink
-    run("rm -f /data/web_static/current")
+    run("rm -rf /data/web_static/current")
 
     # Create a new symlink
-    run("sudo ln -sf /data/web_static/releases/web_static_{}\
-    /data/web_static/current/".format(date_now))
+    run("ln -sf /data/web_static/releases/" +
+        "web_static_{} /data/web_static/current".format(archive_date))
+
+    # Cleanup tmp
+    run("rm /tmp/web_static_{}.tgz".format(archive_date))
+
+    sudo("service nginx restart")
+    print("New version deployed!")

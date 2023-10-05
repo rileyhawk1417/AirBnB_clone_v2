@@ -10,7 +10,7 @@ sudo mkdir -p /data/web_static/releases/test/
 sudo mkdir /data/web_static/shared/
 
 # Create symbolic link each time script is run
-sudo ln -sf /data/web_static/releases/test/ /data/web_static/current/ 
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
 # Insert content into files
 echo "
