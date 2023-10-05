@@ -6,11 +6,11 @@ sudo apt-get update -y;
 sudo apt-get install nginx -y;
 
 # Setup the directories
-mkdir -p /data/web_static/releases/test/
-mkdir /data/web_static/shared/
+sudo mkdir -p /data/web_static/releases/test/
+sudo mkdir /data/web_static/shared/
 
 # Create symbolic link each time script is run
-ln -sf /data/web_static/releases/test/ /data/web_static/current/ 
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current/ 
 
 # Insert content into files
 echo "
@@ -24,7 +24,7 @@ Holberton School
 " | sudo tee /data/web_static/releases/test/index.html
 
 # Give ownership to ubuntu
-chown -R ubuntu:ubuntu /data/
+sudo chown -R ubuntu:ubuntu /data/
 
 echo "
 server {
@@ -48,4 +48,4 @@ server {
 	}
 }
 " | sudo tee /etc/nginx/sites-enabled/default;
-service nginx restart;
+sudo service nginx restart;
