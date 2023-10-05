@@ -9,6 +9,9 @@ sudo apt-get install nginx -y;
 sudo mkdir -p /data/web_static/releases/test/
 sudo mkdir /data/web_static/shared/
 
+# If symlink exists remove it
+rm -rf /data/web_static/current/
+
 # Create symbolic link each time script is run
 sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
