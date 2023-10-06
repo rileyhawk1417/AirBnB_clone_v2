@@ -87,6 +87,7 @@ def do_deploy(archive_path):
 
 @task
 def deploy():
+    """Archive & deploy to server"""
     archive = do_pack()
     if archive is None:
         return False
