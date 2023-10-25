@@ -13,7 +13,7 @@ sudo mkdir /data/web_static/shared/
 rm -rf /data/web_static/current/
 
 # Create symbolic link each time script is run
-sudo ln -sf /data/web_static/releases/test/ /data/web_static/current/ 
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
 # Insert content into files
 echo "
