@@ -1,5 +1,11 @@
+#!/usr/bin/python3
+"""
+MySQL Engine
+"""
+
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.ext.declarative import declarative_base
 import os
 from models.user import User
 from models.place import Place
@@ -11,15 +17,18 @@ from models.base_model import Base
 
 
 class DBStorage:
+    """MySQL Storage Engine"""
+
     __engine = None
     __session = None
 
     def __init__(self):
-        user = os.environ.get('HBNB_MYSQL_USER', 'default_user')
-        password = os.environ.get('HBNB_MYSQL_PWD', 'default_password')
-        host = os.environ.get('HBNB_MYSQL_HOST', 'localhost')
-        database = os.environ.get('HBNB_MYSQL_DB', 'default_db')
-        env = os.environ.get('HBNB_ENV', 'development')
+        """Init function"""
+        user = os.environ.get("HBNB_MYSQL_USER", "default_user")
+        password = os.environ.get("HBNB_MYSQL_PWD", "default_password")
+        host = os.environ.get("HBNB_MYSQL_HOST", "localhost")
+        database = os.environ.get("HBNB_MYSQL_DB", "default_db")
+        env = os.environ.get("HBNB_ENV", "development")
 
         # Define the MySQL connection URL using the retrieved values
         mysql_url = f"mysql://{user}:{password}@{host}/{database}"
@@ -30,7 +39,7 @@ class DBStorage:
         self.__session = Session()
 
         # Drop tables if environment is "test"
-        if env == 'test':
+        if env == "test":
             metadata = MetaData()
             metadata.reflect(bind=self.__engine)
 
@@ -61,10 +70,16 @@ class DBStorage:
         return obj_dict
 
     def new(self, obj):
+        """Start a new session"""
         self.__session.add(obj)
 
     def save(self):
+        """Commit the transaction"""
         self.__session.commit()
+
+    def close(self):
+        """Close the session"""
+        self.__session.close()
 
     def delete(self, obj=None):
         if obj:
@@ -73,6 +88,7 @@ class DBStorage:
 
     def reload(self):
         # Create all tables in the database
+        """Reload the tables"""
         Base.metadata.create_all(self.__engine)
 
         # Create the current database session with specified options
